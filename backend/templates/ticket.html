@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Ticket — TravelGo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --navy: #0a1628; --gold: #c9a84c; --gold-light: #e8c97a; --sand: #f5f0e8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--navy); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+
+        .topbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(10,22,40,0.97); padding: 16px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(201,168,76,0.12); }
+        .logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: white; text-decoration: none; }
+        .logo span { color: var(--gold); }
+
+        .ticket-wrapper {
+            margin-top: 80px;
+            background: white;
+            max-width: 700px;
+            width: 100%;
+            display: flex;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        /* Perforated edge */
+        .ticket-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 210px; top: 0; bottom: 0;
+            width: 3px;
+            background: repeating-linear-gradient(to bottom, #ddd 0, #ddd 8px, transparent 8px, transparent 16px);
+        }
+
+        .ticket-main { flex: 1; padding: 35px; border-right: none; }
+
+        .t-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1.5px solid var(--gold); padding-bottom: 18px; margin-bottom: 25px; }
+        .t-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--navy); }
+        .t-logo span { color: var(--gold); }
+        .t-status { font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; color: #27ae60; border: 2px solid #27ae60; padding: 5px 12px; transform: rotate(-3deg); display: inline-block; }
+
+        .t-row { display: flex; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 16px; }
+        .t-group { display: flex; flex-direction: column; }
+        .t-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #aaa; margin-bottom: 5px; }
+        .t-value { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--navy); }
+        .t-value-lg { font-size: 1.5rem; color: var(--navy); }
+        .t-sub { font-size: 0.75rem; color: #aaa; font-family: 'DM Sans', sans-serif; font-weight: 400; margin-top: 2px; }
+
+        .ticket-stub { width: 200px; background: var(--sand); padding: 35px 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex-shrink: 0; }
+        .qr-img { width: 110px; height: 110px; background: url('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TravelGoBooking') center/cover; margin-bottom: 14px; opacity: 0.85; }
+        .qr-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: #aaa; }
+        .stub-brand { margin-top: 22px; font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--navy); }
+        .stub-brand span { color: var(--gold); }
+
+        .btn-group { display: flex; gap: 14px; margin-top: 28px; }
+        .btn { padding: 12px 26px; border-radius: 2px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: 0.3s; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-print { background: white; color: var(--navy); border: 1.5px solid rgba(10,22,40,0.2); }
+        .btn-print:hover { background: var(--sand); border-color: var(--gold); }
+        .btn-home { background: var(--navy); color: var(--gold); }
+        .btn-home:hover { background: #1a2f52; }
+
+        @media print {
+            .topbar, .btn-group { display: none; }
+            body { background: white; padding: 0; }
+            .ticket-wrapper { box-shadow: none; margin-top: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="/dashboard" class="logo">Travel<span>Go</span></a>
+        <span style="color:rgba(255,255,255,0.35); font-size:0.78rem;">BOOKING CONFIRMED</span>
+    </div>
+
+    <div class="ticket-wrapper">
+        <div class="ticket-main">
+            <div class="t-header">
+                <div class="t-logo">Travel<span>Go</span></div>
+                <div class="t-status">✓ CONFIRMED</div>
+            </div>
+
+            <div class="t-row">
+                <div class="t-group">
+                    <span class="t-label">Booking ID</span>
+                    <span class="t-value" style="font-family:'Space Mono',monospace; font-size:1rem;">#{{ booking.booking_id }}</span>
+                </div>
+                <div class="t-group" style="text-align:right;">
+                    <span class="t-label">Date</span>
+                    <span class="t-value">{{ booking.date }}</span>
+                </div>
+            </div>
+
+            <div class="t-row">
+                <div class="t-group">
+                    <span class="t-label">Transport / Property</span>
+                    <span class="t-value t-value-lg">{{ booking.transport_id }}</span>
+                    <span class="t-sub">Standard Class</span>
+                </div>
+            </div>
+
+            <div class="t-row">
+                <div class="t-group">
+                    <span class="t-label">Seat(s)</span>
+                    <span class="t-value">{{ booking.seat }}</span>
+                </div>
+                <div class="t-group" style="text-align:right;">
+                    <span class="t-label">Amount Paid</span>
+                    <span class="t-value" style="color:var(--gold); font-size:1.4rem;">₹{{ booking.price }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ticket-stub">
+            <div class="qr-img"></div>
+            <div class="qr-label">Scan to Verify</div>
+            <div class="stub-brand">Travel<span>Go</span></div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print Ticket</button>
+        <a href="/dashboard" class="btn btn-home">Back to Dashboard</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Seats — TravelGo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --navy: #0a1628; --navy-mid: #112240; --gold: #c9a84c; --gold-light: #e8c97a; --sand: #f5f0e8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--navy); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; color: white; }
+
+        .topbar { position: fixed; top: 0; left: 0; right: 0; background: rgba(10,22,40,0.95); backdrop-filter: blur(10px); padding: 16px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(201,168,76,0.12); z-index: 10; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: white; text-decoration: none; }
+        .logo span { color: var(--gold); }
+
+        .seat-container { margin-top: 80px; text-align: center; max-width: 500px; width: 100%; }
+        .eyebrow { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 12px; }
+        h2 { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; margin-bottom: 6px; }
+        .sub-header { color: rgba(255,255,255,0.55); font-size: 0.9rem; margin-bottom: 38px; }
+        .sub-header span { color: var(--gold-light); font-weight: 600; }
+
+        .seat-panel { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 35px; margin-bottom: 30px; }
+
+        .seat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; justify-content: center; margin-bottom: 0; }
+        .seat {
+            width: 58px; height: 58px;
+            background: rgba(255,255,255,0.1);
+            border: 1.5px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.75);
+            border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s;
+            user-select: none;
+        }
+        .seat:hover { background: rgba(201,168,76,0.15); border-color: var(--gold); color: var(--gold-light); transform: translateY(-2px); }
+        .seat.selected { background: var(--gold); border-color: var(--gold); color: var(--navy); box-shadow: 0 4px 18px rgba(201,168,76,0.4); transform: scale(1.05); }
+
+        .legend { display: flex; justify-content: center; gap: 22px; margin-top: 20px; font-size: 0.75rem; color: rgba(255,255,255,0.55); }
+        .legend-item { display: flex; align-items: center; gap: 7px; }
+        .legend-box { width: 14px; height: 14px; border-radius: 2px; }
+        .lb-avail { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .lb-sel { background: var(--gold); }
+
+        .btn-confirm {
+            background: var(--gold); color: var(--navy);
+            width: 100%; padding: 16px;
+            border: none; border-radius: 2px;
+            font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-confirm:hover:not(:disabled) { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(201,168,76,0.35); }
+        .btn-confirm:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.25); cursor: not-allowed; }
+
+        .footer-note { margin-top: 16px; color: rgba(255,255,255,0.3); font-size: 0.75rem; }
+        .hidden-inputs { display: none; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="/dashboard" class="logo">Travel<span>Go</span></a>
+        <span style="color:rgba(255,255,255,0.4); font-size:0.82rem;">Select Seats</span>
+    </div>
+
+    <div class="seat-container">
+        <div class="eyebrow">✦ Choose Your Seats</div>
+        <h2>{{ id }}</h2>
+        <p class="sub-header">Price: <span id="displayPrice">₹{{ price }}</span> per seat</p>
+
+        <div class="seat-panel">
+            <form action="/book" method="POST" id="bookingForm">
+                <div class="hidden-inputs">
+                    <input type="hidden" name="transport_id" value="{{ id }}">
+                    <input type="hidden" id="basePrice" value="{{ price }}">
+                    <input type="hidden" name="price" id="finalPrice" value="{{ price }}">
+                    <input type="hidden" name="seat" id="selectedSeats" required>
+                </div>
+
+                <div class="seat-grid">
+                    {% for i in range(1, 21) %}
+                    <div class="seat" onclick="toggleSeat(this, '{{ i }}')">{{ i }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-box lb-avail"></div> Available</div>
+                    <div class="legend-item"><div class="legend-box lb-sel"></div> Selected</div>
+                </div>
+            </form>
+        </div>
+
+        <button type="submit" form="bookingForm" class="btn-confirm" id="confirmBtn" disabled>Select a Seat to Continue</button>
+        <div class="footer-note">* You can select multiple seats. Price updates automatically.</div>
+    </div>
+
+    <script>
+        const selectedSeatsSet = new Set();
+        const confirmBtn = document.getElementById('confirmBtn');
+        const selectedSeatsInput = document.getElementById('selectedSeats');
+        const finalPriceInput = document.getElementById('finalPrice');
+        const basePrice = parseFloat(document.getElementById('basePrice').value);
+        const displayPriceSpan = document.getElementById('displayPrice');
+
+        function toggleSeat(element, seatNumber) {
+            element.classList.toggle('selected');
+            if (selectedSeatsSet.has(seatNumber)) selectedSeatsSet.delete(seatNumber);
+            else selectedSeatsSet.add(seatNumber);
+
+            const seatsArray = Array.from(selectedSeatsSet).sort((a, b) => a - b);
+            selectedSeatsInput.value = seatsArray.join(', ');
+            const count = seatsArray.length;
+            const totalPrice = count > 0 ? count * basePrice : basePrice;
+            finalPriceInput.value = totalPrice;
+            displayPriceSpan.textContent = '₹' + totalPrice;
+
+            if (count > 0) {
+                confirmBtn.textContent = `Confirm ${count} Seat${count>1?'s':''} — Pay ₹${totalPrice}`;
+                confirmBtn.removeAttribute('disabled');
+            } else {
+                confirmBtn.textContent = 'Select a Seat to Continue';
+                confirmBtn.setAttribute('disabled', 'true');
+            }
+        }
+    </script>
+</body>
+</html>

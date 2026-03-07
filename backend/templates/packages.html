@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Packages — TravelGo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --navy: #0a1628; --navy-mid: #112240; --gold: #c9a84c; --gold-light: #e8c97a; --sand: #f5f0e8; --cream: #fdfaf4; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--navy); }
+
+        .topbar { background: var(--navy); padding: 18px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(201,168,76,0.15); position: sticky; top: 0; z-index: 10; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: white; text-decoration: none; }
+        .logo span { color: var(--gold); }
+        .back-btn { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.82rem; display: flex; align-items: center; gap: 8px; transition: color 0.3s; }
+        .back-btn:hover { color: var(--gold); }
+
+        .page-header { background: var(--navy); padding: 60px 50px 70px; text-align: center; position: relative; overflow: hidden; }
+        .page-header::before { content: ''; position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?q=80&w=1600') center/cover; opacity: 0.12; }
+        .page-header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, var(--gold), transparent); }
+        .page-header .eyebrow { position: relative; z-index: 2; color: var(--gold); font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 12px; }
+        .page-header h1 { position: relative; z-index: 2; font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 700; color: white; }
+        .page-header h1 em { font-style: italic; color: var(--gold-light); }
+        .page-header p { position: relative; z-index: 2; color: rgba(255,255,255,0.55); margin-top: 10px; font-size: 0.95rem; font-weight: 300; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 55px 30px; }
+        .packages-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 24px; }
+
+        .pkg-card { background: white; box-shadow: 0 4px 24px rgba(10,22,40,0.07); transition: transform 0.3s, box-shadow 0.3s; border-top: 3px solid transparent; overflow: hidden; }
+        .pkg-card:hover { transform: translateY(-5px); box-shadow: 0 14px 40px rgba(10,22,40,0.13); border-top-color: var(--gold); }
+        .pkg-img { width: 100%; height: 180px; object-fit: cover; display: block; }
+        .pkg-body { padding: 24px 26px; }
+        .pkg-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+        .pkg-duration { font-size: 0.78rem; color: #999; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+        .pkg-duration i { color: var(--gold); }
+        .pkg-includes { font-size: 0.78rem; color: #888; margin-bottom: 18px; display: flex; align-items: center; gap: 6px; }
+        .pkg-includes i { color: #4caf50; }
+        .pkg-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid rgba(10,22,40,0.07); }
+        .pkg-price { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--navy); }
+        .pkg-price span { font-family: 'DM Sans', sans-serif; font-size: 0.72rem; color: #aaa; font-weight: 400; }
+        .btn-enquire { background: var(--navy); color: var(--gold); border: none; padding: 10px 22px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: background 0.3s; border-radius: 2px; }
+        .btn-enquire:hover { background: #1a2f52; }
+
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,22,40,0.75); z-index: 999; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; max-width: 420px; width: 90%; border-top: 4px solid var(--gold); padding: 40px; text-align: center; animation: popIn 0.3s ease; }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal .eyebrow { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 10px; }
+        .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--navy); margin-bottom: 10px; }
+        .modal p { color: #888; font-size: 0.87rem; margin-bottom: 8px; }
+        .modal .modal-price { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--navy); margin: 12px 0; }
+        .modal-note { font-size: 0.78rem; color: #bbb; margin-top: 10px; }
+        .btn-close { background: var(--navy); color: var(--gold); border: none; padding: 13px 36px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; margin-top: 18px; transition: background 0.3s; border-radius: 2px; }
+        .btn-close:hover { background: #1a2f52; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="/dashboard" class="logo">Travel<span>Go</span></a>
+        <a href="/dashboard" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+
+    <div class="page-header">
+        <div class="eyebrow">✦ All-Inclusive</div>
+        <h1>Travel <em>Packages</em></h1>
+        <p>Curated holiday deals for every kind of traveler</p>
+    </div>
+
+    <div class="container">
+        <div class="packages-grid">
+            {% for pkg in packages %}
+            <div class="pkg-card">
+                <img src="{{ pkg.image }}" alt="{{ pkg.name }}" class="pkg-img">
+                <div class="pkg-body">
+                    <div class="pkg-name">{{ pkg.name }}</div>
+                    <div class="pkg-duration"><i class="fas fa-clock"></i> {{ pkg.duration }}</div>
+                    <div class="pkg-includes"><i class="fas fa-check-circle"></i> {{ pkg.includes }}</div>
+                    <div class="pkg-footer">
+                        <div class="pkg-price">₹{{ pkg.price }} <span>/ person</span></div>
+                        <button class="btn-enquire" onclick="openModal('{{ pkg.name }}','{{ pkg.price }}','{{ pkg.duration }}','{{ pkg.includes }}')">Enquire</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="eyebrow">✦ Package Enquiry</div>
+            <h3 id="mTitle"></h3>
+            <p id="mDuration"></p>
+            <p id="mIncludes"></p>
+            <div class="modal-price" id="mPrice"></div>
+            <p class="modal-note">Our travel agent will contact you within 24 hours to confirm availability and process your booking.</p>
+            <button class="btn-close" onclick="closeModal()">Got It ✓</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal(name, price, duration, includes) {
+            document.getElementById('mTitle').textContent = name;
+            document.getElementById('mDuration').textContent = duration;
+            document.getElementById('mIncludes').textContent = includes;
+            document.getElementById('mPrice').textContent = '₹' + price + ' / person';
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+        document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+    </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — TravelGo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --navy: #0a1628; --navy-mid: #112240; --gold: #c9a84c; --gold-light: #e8c97a; --sand: #f5f0e8; --cream: #fdfaf4; --text-muted: #8892a4; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--navy); }
+
+        /* NAVBAR */
+        .navbar { background: var(--navy); padding: 0 50px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; height: 68px; box-shadow: 0 2px 20px rgba(10,22,40,0.3); }
+        .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: white; text-decoration: none; }
+        .logo span { color: var(--gold); }
+        .user-area { display: flex; align-items: center; gap: 18px; }
+        .avatar { width: 38px; height: 38px; background: linear-gradient(135deg, var(--gold), #a07830); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--navy); font-weight: 700; font-size: 0.95rem; }
+        .user-name { font-size: 0.88rem; font-weight: 600; color: white; }
+        .btn-logout { color: rgba(255,255,255,0.45); text-decoration: none; font-size: 0.78rem; letter-spacing: 0.05em; transition: color 0.3s; border: 1px solid rgba(255,255,255,0.15); padding: 5px 14px; border-radius: 2px; }
+        .btn-logout:hover { color: var(--gold); border-color: var(--gold); }
+
+        /* HERO WELCOME */
+        .welcome-hero {
+            background: var(--navy);
+            padding: 55px 55px 65px;
+            position: relative;
+            overflow: hidden;
+        }
+        .welcome-hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1600') center/cover no-repeat;
+            opacity: 0.08;
+        }
+        .welcome-hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, var(--gold), transparent); }
+        .welcome-inner { position: relative; z-index: 2; }
+        .welcome-eyebrow { color: var(--gold); font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 10px; }
+        .welcome-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 700; color: white; margin-bottom: 8px; }
+        .welcome-hero h1 em { font-style: italic; color: var(--gold-light); }
+        .welcome-hero p { color: rgba(255,255,255,0.55); font-size: 0.95rem; font-weight: 300; }
+
+        /* CONTAINER */
+        .container { max-width: 1200px; margin: 0 auto; padding: 45px 35px; }
+
+        /* SECTION HEADERS */
+        .sec-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+        .sec-line { flex: 1; height: 1px; background: rgba(10,22,40,0.1); }
+        .sec-header h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--navy); white-space: nowrap; }
+        .gold-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+
+        /* SERVICES GRID */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 55px; }
+        .service-card {
+            background: white;
+            border: 1px solid rgba(10,22,40,0.07);
+            padding: 30px 22px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--navy);
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            position: relative;
+            border-radius: 2px;
+        }
+        .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gold); transform: scaleX(0); transition: transform 0.3s; }
+        .service-card:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(10,22,40,0.1); border-color: transparent; }
+        .service-card:hover::before { transform: scaleX(1); }
+        .icon-wrap { width: 62px; height: 62px; border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .bus-c { background: #fff8ec; color: #c9a84c; }
+        .train-c { background: #edf4ff; color: #1a6eb5; }
+        .flight-c { background: #edfdf5; color: #1a9c5b; }
+        .hotel-c { background: #f7eeff; color: #8e24aa; }
+        .pkg-c { background: #fff3e8; color: #d4722a; }
+        .service-card h3 { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 4px; }
+        .service-card p { font-size: 0.78rem; color: #999; }
+
+        /* BOOKINGS */
+        .bookings-list { display: flex; flex-direction: column; gap: 14px; }
+        .ticket-card {
+            background: white;
+            border: 1px solid rgba(10,22,40,0.07);
+            display: flex;
+            overflow: hidden;
+            transition: box-shadow 0.3s, transform 0.3s;
+            border-radius: 2px;
+        }
+        .ticket-card:hover { box-shadow: 0 8px 30px rgba(10,22,40,0.1); transform: translateX(4px); }
+        .ticket-accent { width: 5px; background: var(--gold); flex-shrink: 0; }
+        .ticket-body { padding: 22px 28px; flex: 1; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .booking-type { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+        .booking-route { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); }
+        .booking-meta { color: #aaa; font-size: 0.8rem; margin-top: 5px; }
+        .booking-meta i { color: var(--gold); margin-right: 4px; }
+        .ticket-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .booking-price { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--navy); }
+        .badge-confirmed { background: #edfdf5; color: #1a7a46; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 2px; border: 1px solid rgba(26,154,91,0.25); }
+        .btn-cancel { background: none; border: none; color: #ccc; cursor: pointer; font-size: 0.85rem; transition: color 0.3s; padding: 4px; }
+        .btn-cancel:hover { color: #e53935; }
+
+        .empty-state { text-align: center; padding: 60px; color: #bbb; background: white; border: 1px dashed #ddd; border-radius: 2px; }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 16px; display: block; color: var(--gold); opacity: 0.5; }
+        .empty-state p { font-size: 0.9rem; }
+
+        @media (max-width: 768px) { .navbar { padding: 0 20px; } .welcome-hero { padding: 40px 22px 50px; } .container { padding: 30px 20px; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/dashboard" class="logo">Travel<span>Go</span></a>
+        <div class="user-area">
+            <div class="avatar">{{ name[0] }}</div>
+            <div>
+                <div class="user-name">{{ name }}</div>
+                <a href="/logout" class="btn-logout">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="welcome-hero">
+        <div class="welcome-inner">
+            <div class="welcome-eyebrow">✦ Welcome Back</div>
+            <h1>Hello, <em>{{ name }}</em></h1>
+            <p>Where would you like to go today? Your next adventure awaits.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sec-header">
+            <div class="gold-dot"></div>
+            <h3>Book a Trip</h3>
+            <div class="sec-line"></div>
+        </div>
+        <div class="services-grid">
+            <a href="/bus" class="service-card">
+                <div class="icon-wrap bus-c"><i class="fas fa-bus"></i></div>
+                <h3>Bus</h3><p>Affordable road trips</p>
+            </a>
+            <a href="/train" class="service-card">
+                <div class="icon-wrap train-c"><i class="fas fa-train"></i></div>
+                <h3>Train</h3><p>Scenic rail journeys</p>
+            </a>
+            <a href="/flight" class="service-card">
+                <div class="icon-wrap flight-c"><i class="fas fa-plane"></i></div>
+                <h3>Flight</h3><p>Fastest way to travel</p>
+            </a>
+            <a href="/hotels" class="service-card">
+                <div class="icon-wrap hotel-c"><i class="fas fa-hotel"></i></div>
+                <h3>Hotel</h3><p>Comfortable stays</p>
+            </a>
+            <a href="/packages" class="service-card">
+                <div class="icon-wrap pkg-c"><i class="fas fa-suitcase-rolling"></i></div>
+                <h3>Packages</h3><p>All-inclusive deals</p>
+            </a>
+        </div>
+
+        <div class="sec-header">
+            <div class="gold-dot"></div>
+            <h3>My Recent Bookings</h3>
+            <div class="sec-line"></div>
+        </div>
+        <div class="bookings-list">
+            {% if bookings %}
+                {% for booking in bookings %}
+                <div class="ticket-card">
+                    <div class="ticket-accent"></div>
+                    <div class="ticket-body">
+                        <div>
+                            <div class="booking-type">{{ booking.type }} Booking</div>
+                            <div class="booking-route">
+                                {% if booking.source %}{{ booking.source }} → {{ booking.destination }}{% else %}{{ booking.details }}{% endif %}
+                            </div>
+                            <div class="booking-meta">
+                                <i class="far fa-calendar-alt"></i>{{ booking.date }} &nbsp;·&nbsp; ID: #{{ booking.booking_id }}
+                            </div>
+                        </div>
+                        <div class="ticket-right">
+                            <div class="booking-price">₹{{ booking.price }}</div>
+                            <span class="badge-confirmed">Confirmed</span>
+                            <form action="/remove_booking" method="POST" style="display:inline;">
+                                <input type="hidden" name="booking_id" value="{{ booking.booking_id }}">
+                                <button type="submit" class="btn-cancel" title="Cancel Booking"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-globe-asia"></i>
+                    <p>No upcoming trips. Start booking your next adventure!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
