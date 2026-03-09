@@ -289,9 +289,3 @@ This project demonstrates skills in:
 
 ---
 
-# Author
-
-Your Name
-
-GitHub  
-https://github.com/yourusername
