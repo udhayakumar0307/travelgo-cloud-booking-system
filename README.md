@@ -160,7 +160,7 @@ EC2 Hosting
 
 ![ER Diagram](er diagram.jpeg)
 
-Place your ER diagram image in the project folder and name it **er_diagram.png**.
+Place your ER diagram image in the project folder and name it **ER_Diagram.jpeg**.
 
 ---
 
